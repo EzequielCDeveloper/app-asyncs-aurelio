@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+/* ─── Design System: Gourmet Speed / DotaBURGUERS ─── */
+@theme {
+  /* Colors */
+  --color-brand-cream: #fbf8f3;
+  --color-brand-red: #b90e0a;
+  --color-brand-yellow: #f1b80c;
+  --color-brand-dark: #1a1a1a;
+
+  --color-surface: #fcf9f8;
+  --color-surface-dim: #dcd9d9;
+  --color-surface-bright: #fcf9f8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f3f2;
+  --color-surface-container: #f0eded;
+  --color-surface-container-high: #eae7e7;
+  --color-surface-container-highest: #e5e2e1;
+  --color-on-surface: #1c1b1b;
+  --color-on-surface-variant: #5c403b;
+  --color-inverse-surface: #313030;
+  --color-inverse-on-surface: #f3f0ef;
+  --color-outline: #916f6a;
+  --color-outline-variant: #e5bdb7;
+  --color-surface-tint: #bd120d;
+  --color-surface-variant: #e5e2e1;
+
+  --color-primary: #8f0002;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #b90e0a;
+  --color-on-primary-container: #ffc8bf;
+  --color-inverse-primary: #ffb4a9;
+  --color-primary-fixed: #ffdad5;
+  --color-primary-fixed-dim: #ffb4a9;
+  --color-on-primary-fixed: #410000;
+  --color-on-primary-fixed-variant: #930002;
+
+  --color-secondary: #785a00;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fec320;
+  --color-on-secondary-container: #6e5200;
+  --color-secondary-fixed: #ffdf9b;
+  --color-secondary-fixed-dim: #f8be18;
+  --color-on-secondary-fixed: #251a00;
+  --color-on-secondary-fixed-variant: #5b4300;
+
+  --color-tertiary: #003aa6;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #004fd9;
+  --color-on-tertiary-container: #c8d3ff;
+  --color-tertiary-fixed: #dbe1ff;
+  --color-tertiary-fixed-dim: #b5c4ff;
+  --color-on-tertiary-fixed: #00174c;
+  --color-on-tertiary-fixed-variant: #003dab;
+
+  --color-error: #dc2626;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-success: #16a34a;
+
+  --color-background: #fcf9f8;
+  --color-on-background: #1c1b1b;
+
+  --color-border-subtle: #e5e1da;
+
+  /* Border Radius */
+  --radius-2xl: 1rem;
+  --radius-xl: 0.75rem;
+  --radius-lg: 0.5rem;
+
+  /* Spacing */
+  --spacing-container-max: 1280px;
+  --spacing-gutter-mobile: 1rem;
+  --spacing-gutter-desktop: 2rem;
+  --spacing-stack-sm: 0.5rem;
+  --spacing-stack-md: 1rem;
+  --spacing-stack-lg: 2rem;
+
+  /* Font Family */
+  --font-headline-2xl: "Hanken Grotesk", sans-serif;
+  --font-headline-xl: "Hanken Grotesk", sans-serif;
+  --font-headline-lg: "Hanken Grotesk", sans-serif;
+  --font-headline-lg-mobile: "Hanken Grotesk", sans-serif;
+  --font-body-lg: "Hanken Grotesk", sans-serif;
+  --font-body-base: "Hanken Grotesk", sans-serif;
+  --font-price-display: "Hanken Grotesk", sans-serif;
+  --font-label-bold: "Hanken Grotesk", sans-serif;
+
+  /* Font Sizes */
+  --text-headline-2xl: 48px;
+  --text-headline-xl: 32px;
+  --text-headline-lg: 24px;
+  --text-headline-lg-mobile: 20px;
+  --text-body-lg: 18px;
+  --text-body-base: 16px;
+  --text-price-display: 24px;
+  --text-label-bold: 14px;
+}
+
+/* ─── Utilitiy classes ─── */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Material Symbols base */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+.material-symbols-outlined.fill {
+  font-variation-settings: "FILL" 1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Slide-in from right for mobile drawer */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes slideOutRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+/* Skeleton pulse */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--color-surface-container-low) 25%, var(--color-surface-container) 50%, var(--color-surface-container-low) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
