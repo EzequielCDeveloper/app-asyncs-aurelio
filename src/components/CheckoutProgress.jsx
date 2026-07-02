@@ -3,8 +3,9 @@ const STEPS = [
   { key: 2, label: "Inventario" },
   { key: 3, label: "Total" },
   { key: 4, label: "Pedido" },
-  { key: 5, label: "Guardar" },
-  { key: 6, label: "Completado" },
+  { key: 5, label: "Pago" },
+  { key: 6, label: "Guardar" },
+  { key: 7, label: "Completado" },
 ];
 
 export default function CheckoutProgress({ currentStep }) {

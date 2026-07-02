@@ -41,7 +41,7 @@ export default function Header({ showSearch = false, searchTerm, onSearchChange 
               type="text"
               value={searchTerm || ""}
               onChange={(e) => onSearchChange?.(e.target.value)}
-              placeholder="Search for burgers, sides..."
+              placeholder="Buscar hamburguesas, acompañamientos..."
               className="w-full bg-surface-container-low border border-border-subtle rounded-2xl py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
             />
           </div>
@@ -102,6 +102,14 @@ export default function Header({ showSearch = false, searchTerm, onSearchChange 
                 <p className="font-label-bold text-label-bold text-on-surface">{user.firstName} {user.lastName}</p>
                 <p className="text-sm text-on-surface-variant truncate">{user.email}</p>
               </div>
+              <Link
+                to="/mis-compras"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 w-full text-left px-3 py-2 rounded-xl text-on-surface-variant hover:bg-surface-variant transition-colors font-body-base text-sm no-underline"
+              >
+                <span className="material-symbols-outlined text-sm">receipt_long</span>
+                Mis Compras
+              </Link>
               <button
                 onClick={() => { logout(); setMenuOpen(false); navigate("/"); }}
                 className="w-full text-left px-3 py-2 rounded-xl text-on-surface-variant hover:bg-surface-variant transition-colors font-body-base text-sm"

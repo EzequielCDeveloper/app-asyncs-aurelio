@@ -20,7 +20,7 @@ Referencia completa de la API de componentes, props, comportamiento, estados vac
 
 - **Sticky**: El header permanece fijo en la parte superior (`sticky top-0 z-50`).
 - **Cart Badge**: Muestra un badge con la cantidad total de items. **Caps at "99+"** cuando `totalItems > 99`.
-- **User Menu**: Si el usuario está logueado, muestra un dropdown con nombre, email y opción "Cerrar sesión". El menú se cierra al hacer clic fuera (click-outside detectado via `useRef` + `mousedown` listener).
+- **User Menu**: Si el usuario está logueado, muestra un dropdown con nombre, email, link "Mis Compras" y opción "Cerrar sesión". El menú se cierra al hacer clic fuera (click-outside detectado via `useRef` + `mousedown` listener).
 - **Sin login**: Si no hay usuario, el botón de usuario redirige a `/login`.
 - **Responsive**: El campo de búsqueda solo se muestra en desktop (`hidden md:flex`).
 
@@ -51,6 +51,32 @@ Referencia completa de la API de componentes, props, comportamiento, estados vac
 
 ---
 
+## SplashScreen
+
+**Archivo**: `src/components/SplashScreen.jsx`
+
+### Props
+
+| Prop | Tipo | Requerido | Default | Descripción |
+|------|------|-----------|---------|-------------|
+| `onFinish` | `function` | Sí | — | Callback ejecutado al terminar la animación de fade-out |
+
+### Comportamiento
+
+- Overlay de viewport completo (position fixed, inset 0, z-50).
+- Se muestra al menos 2 segundos (mínimo de duración).
+- Luego ejecuta una animación de fade-out (opacidad 1 → 0).
+- Al terminar el fade-out, llama a `onFinish` callback.
+- Renderiza el logo de DotaBURGUERS centrado con estilos de marca.
+
+### Estados
+
+- **Montaje**: Opacidad 1, visible.
+- **Fade-out**: Transición de opacidad (500ms-1s).
+- **Completado**: `onFinish` notifica al padre (HomePage) para que oculte el splash.
+
+---
+
 ## ProductCard
 
 **Archivo**: `src/components/ProductCard.jsx`
@@ -63,16 +89,21 @@ Referencia completa de la API de componentes, props, comportamiento, estados vac
 | `product.name` | `string` | Sí | — | Nombre del producto |
 | `product.description` | `string` | Sí | — | Descripción corta |
 | `product.price` | `number` | Sí | — | Precio unitario en USD |
-| `product.category` | `string` | Sí | — | Categoría (Burgers, Sides, Drinks, Desserts) |
+| `product.category` | `string` | Sí | — | Categoría mapeada: "Burgers", "Sides", "Drinks", "Desserts" |
 | `product.badge` | `string \| null` | No | `null` | Texto del badge (ej: "Popular", "Nuevo") |
 | `product.image` | `string` | Sí | — | URL de la imagen del producto |
 | `product.alt` | `string` | Sí | — | Texto alternativo de la imagen |
+| `product.rating` | `number` | Sí | — | Rating promedio (0-5, de FakeStore `rating.rate`) |
+| `product.stock` | `number` | Sí | — | Cantidad disponible (de FakeStore `rating.count`) |
 
 ### Comportamiento
 
 - Al hacer clic en el botón "+", dispara `dispatch({ type: "ADD_ITEM", product })`.
 - **Hover zoom**: La imagen escala al 110% con `transition-transform duration-500 group-hover:scale-110`.
 - **Badge**: Si `product.badge` no es null, se muestra en la esquina superior izquierda con bg `secondary-container`.
+- **Category chip**: Muestra la categoría como un chip estilizado debajo del nombre.
+- **Rating**: Muestra estrellas (★★★★★) basadas en `product.rating` (redondeado al entero más cercano).
+- **Stock**: Texto "Quedan N" si stock > 0, o "Agotado" si stock === 0.
 - La tarjeta completa se eleva ligeramente en hover (`hover:-translate-y-1 hover:shadow-md`).
 
 ### Accesibilidad
@@ -148,7 +179,7 @@ Referencia completa de la API de componentes, props, comportamiento, estados vac
 
 | Prop | Tipo | Requerido | Default | Descripción |
 |------|------|-----------|---------|-------------|
-| `currentStep` | `number` | Sí | — | Paso actual (1-6). 0 = no se renderiza. |
+| `currentStep` | `number` | Sí | — | Paso actual (1-7). 0 = no se renderiza. |
 
 ### Steps
 
@@ -157,9 +188,10 @@ Referencia completa de la API de componentes, props, comportamiento, estados vac
 | 1 | Conexión | `<` → pending, `=` → active, `>` → completed |
 | 2 | Inventario | `<` → pending, `=` → active, `>` → completed |
 | 3 | Total | `<` → pending, `=` → active, `>` → completed |
-| 4 | Firestore | `<` → pending, `=` → active, `>` → completed |
-| 5 | Historial | `<` → pending, `=` → active, `>` → completed |
-| 6 | Completado | `<` → pending, `=` → active, `>` → completed |
+| 4 | Pedido | `<` → pending, `=` → active, `>` → completed |
+| 5 | Pago | `<` → pending, `=` → active, `>` → completed |
+| 6 | Guardar | `<` → pending, `=` → active, `>` → completed |
+| 7 | Completado | `<` → pending, `=` → active, `>` → completed |
 
 ### Comportamiento
 
@@ -179,7 +211,7 @@ Referencia completa de la API de componentes, props, comportamiento, estados vac
 
 | Prop | Tipo | Requerido | Default | Descripción |
 |------|------|-----------|---------|-------------|
-| `order.id` | `string` | Sí | — | ID de la orden (ej: `DB-2JXK8A0-4732`) |
+| `order.id` | `string` | Sí | — | ID de la orden (ej: `2` — ID real devuelto por DummyJSON) |
 | `order.date` | `string` | Sí | — | Fecha ISO de la orden |
 | `onClose` | `function` | Sí | — | Callback al cerrar el modal |
 
@@ -191,13 +223,41 @@ Referencia completa de la API de componentes, props, comportamiento, estados vac
 - Muestra fecha formateada en español (`es-MX`) con hora.
 - Lista de productos comprados con cantidades y subtotales.
 - Totales: subtotal, descuento (si aplica), IVA y total.
-- Botón "Cerrar" (corregido de "Cerrer").
+- Botón "Cerrar".
+- El ID de orden proviene de la respuesta real del POST /carts/add de DummyJSON.
 
 ### Accesibilidad
 
 - `role="dialog"` y `aria-modal="true"`.
 - `aria-label="Ticket de compra"` en el contenedor del modal.
 - Overlay con `bg-black/40 backdrop-blur-sm`.
+
+---
+
+## MyPurchasesPage
+
+**Archivo**: `src/pages/MyPurchasesPage.jsx`
+
+### Props
+
+| Prop | Tipo | Requerido | Default | Descripción |
+|------|------|-----------|---------|-------------|
+| — | — | — | — | **No recibe props** — Lee todo del contexto (`useAuth()`) y de localStorage (`getPurchases()`) |
+
+### Comportamiento
+
+- **Auth guard**: Si `!user` → redirige a `/login` via `useEffect`
+- **Empty state**: Si no hay compras, muestra icono `receipt_long`, "No tenés compras aún", y botón "Ver Menú" que redirige a `/`
+- **Lista**: Muestra las órdenes en orden inverso (más reciente primero), cada una como una tarjeta con:
+  - Número de pedido y fecha formateada (locale `es-AR`)
+  - Lista de productos con título y cantidad
+  - Total de la orden
+- **Fecha**: Formateada con `toLocaleDateString("es-AR", { year, month, day, hour, minute })`
+
+### Accesibilidad
+
+- Usa `<h1>` para el título de la página y `<h3>` para cada pedido
+- Enlaces `<Link>` para navegación semántica
 
 ---
 
@@ -220,6 +280,24 @@ Agrega productos del menú para empezar.
 - Si `!user`: redirige automáticamente a `/login`.
 - Ambos casos se manejan con `useEffect` en el montaje.
 
+### CheckoutPage — Error de API
+
+Cuando falla cualquiera de los pasos del pipeline de checkout real (connection, inventory, order submission):
+- Mensaje de error centrado con icono `error` y descripción del problema.
+- Botón "Reintentar" que reinicia el pipeline desde el paso 1.
+
+### HomePage — Cargando Productos
+
+Mientras se fetch los productos desde FakeStore API:
+- Loading skeleton animado (placeholders grises pulsantes).
+- SplashScreen se muestra durante los primeros 2 segundos como overlay.
+
+### HomePage — Error de API
+
+Cuando falla el fetch de productos:
+- Mensaje de error centrado con icono `error`.
+- Botón "Reintentar" que vuelve a llamar a `fetchProducts()`.
+
 ### HomePage — Sin Resultados de Búsqueda
 
 Cuando el filtro/búsqueda no encuentra productos:
@@ -237,13 +315,22 @@ Cuando el login falla:
 - El input se agita con animación **shake** (Web Animations API, 400ms).
 - Borde del input cambia a `border-error`.
 
+### MyPurchasesPage — Sin Compras
+
+Cuando `purchases.length === 0`:
+
+```
+🧾 receipt_long (icono grande)
+No tenés compras aún
+Tus pedidos aparecerán acá después de completar la compra.
+[Ver Menú] → redirige a /
+```
+
+### MyPurchasesPage — Sin Autenticación
+
+Si `!user`: redirige automáticamente a `/login` via `useEffect`.
+
 ### Errores de Contexto
 
 - `useCart()` lanza `Error("useCart must be used within CartProvider")` si se usa fuera del provider.
 - `useAuth()` lanza `Error("useAuth must be used within AuthProvider")` si se usa fuera del provider.
-
-### CheckoutPage — Error de Simulación
-
-Cuando el paso 4 falla (5% de probabilidad):
-- Mensaje de error centrado con icono `error`.
-- Botón "Reintentar" que reinicia la simulación.

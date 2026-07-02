@@ -89,7 +89,7 @@ describe('HomePage', () => {
       expect(screen.getByText('Classic Burger')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Burgers' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Hamburguesas' }));
 
     expect(screen.getByText('Classic Burger')).toBeInTheDocument();
     expect(screen.queryByText('Radiant Fries')).not.toBeInTheDocument();
@@ -102,7 +102,7 @@ describe('HomePage', () => {
       expect(screen.getByText('Radiant Fries')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Sides' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Acompañamientos' }));
 
     expect(screen.getByText('Radiant Fries')).toBeInTheDocument();
     expect(screen.queryByText('Classic Burger')).not.toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('HomePage', () => {
       expect(screen.getByText('Radiant Fries')).toBeInTheDocument();
     });
 
-    const searchInput = screen.getByPlaceholderText('Search for burgers, sides...');
+    const searchInput = screen.getByPlaceholderText('Buscar hamburguesas, acompañamientos...');
     fireEvent.change(searchInput, { target: { value: 'Fries' } });
 
     expect(screen.getByText('Radiant Fries')).toBeInTheDocument();
@@ -127,9 +127,9 @@ describe('HomePage', () => {
       expect(screen.getByText('Classic Burger')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Burgers' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Hamburguesas' }));
 
-    const searchInput = screen.getByPlaceholderText('Search for burgers, sides...');
+    const searchInput = screen.getByPlaceholderText('Buscar hamburguesas, acompañamientos...');
     fireEvent.change(searchInput, { target: { value: 'Burger' } });
 
     expect(screen.getByText('Classic Burger')).toBeInTheDocument();
@@ -177,7 +177,7 @@ describe('HomePage', () => {
       expect(screen.getByText('Classic Burger')).toBeInTheDocument();
     });
 
-    const searchInput = screen.getByPlaceholderText('Search for burgers, sides...');
+    const searchInput = screen.getByPlaceholderText('Buscar hamburguesas, acompañamientos...');
     fireEvent.change(searchInput, { target: { value: 'zzznotfound' } });
 
     expect(screen.getByText('No se encontraron productos')).toBeInTheDocument();

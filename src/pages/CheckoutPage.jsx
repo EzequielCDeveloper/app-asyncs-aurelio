@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Elements } from "@stripe/react-stripe-js";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import CheckoutProgress from "../components/CheckoutProgress";
 import TicketModal from "../components/TicketModal";
+import StripePaymentForm from "../components/StripePaymentForm";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { submitOrder, validateConnection, validateInventory, savePurchase } from "../api";
+import { stripePromise, createPaymentIntent } from "../stripe";
 
 const STEP_MESSAGES = {
   0: { title: "Finalizar Compra", desc: "Revisa tu pedido antes de continuar.", icon: null },
@@ -14,8 +17,9 @@ const STEP_MESSAGES = {
   2: { title: "Verificando disponibilidad...", desc: "Confirmando que todo esté en stock.", icon: "inventory_2" },
   3: { title: "Calculando total...", desc: "Aplicando impuestos y descuentos.", icon: "sync" },
   4: { title: "Enviando pedido...", desc: "Registrando tu orden en el sistema.", icon: "save" },
-  5: { title: "Guardando compra...", desc: "Actualizando tu historial de compras.", icon: "history" },
-  6: { title: "¡Compra completada!", desc: "Tu orden ha sido procesada exitosamente.", icon: "check_circle" },
+  5: { title: "Pago", desc: "Completa el pago con tu tarjeta.", icon: "credit_card" },
+  6: { title: "Guardando compra...", desc: "Actualizando tu historial de compras.", icon: "history" },
+  7: { title: "¡Compra completada!", desc: "Tu orden ha sido procesada exitosamente.", icon: "check_circle" },
 };
 
 export default function CheckoutPage() {
@@ -26,6 +30,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState(null);
   const [order, setOrder] = useState(null);
   const [showTicket, setShowTicket] = useState(false);
+  const [clientSecret, setClientSecret] = useState(null);
 
   // Redirect if no items or not logged in
   useEffect(() => {
@@ -58,22 +63,37 @@ export default function CheckoutPage() {
         user.id,
         items.map((i) => ({ id: i.id, quantity: i.quantity }))
       );
+      setOrder(orderResponse);
       setStep(5);
 
-      // Step 5: Save purchase to localStorage
-      savePurchase(orderResponse);
-      setStep(6);
-
-      // Step 6: Show ticket
-      setOrder(orderResponse);
-      setShowTicket(true);
+      // Step 5: Create PaymentIntent — StripePaymentForm is rendered below
+      const secret = await createPaymentIntent(total);
+      setClientSecret(secret);
+      // User completes payment in the form; on success → step 6
     } catch (err) {
       setError(err.message);
     }
   }
 
+  function handlePaymentSuccess() {
+    // Step 6: Save purchase to localStorage
+    savePurchase(order);
+    setStep(6);
+
+    // Step 7: Show ticket after brief delay for animation
+    setTimeout(() => {
+      setStep(7);
+      setShowTicket(true);
+    }, 500);
+  }
+
+  function handlePaymentError(msg) {
+    setError(msg);
+  }
+
   function handleRetry() {
     setError(null);
+    setClientSecret(null);
     startCheckout();
   }
 
@@ -115,6 +135,31 @@ export default function CheckoutPage() {
                   Reintentar
                 </button>
               </>
+            ) : step === 5 && clientSecret ? (
+              <div className="text-left">
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                  <StripePaymentForm
+                    amount={total}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                  />
+                </Elements>
+              </div>
+            ) : step === 5 ? (
+              <>
+                <span
+                  className="material-symbols-outlined text-secondary-container text-4xl mb-4 animate-spin"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  sync
+                </span>
+                <h2 className="font-headline-lg text-headline-lg text-on-surface mb-2">
+                  Preparando pago...
+                </h2>
+                <p className="font-body-base text-body-base text-on-surface-variant">
+                  Conectando con la pasarela de pago.
+                </p>
+              </>
             ) : step === 0 ? (
               <>
                 <span className="material-symbols-outlined text-secondary-container text-4xl mb-4 fill">
@@ -133,7 +178,7 @@ export default function CheckoutPage() {
                   Finalizar Compra
                 </button>
               </>
-            ) : step === 6 ? (
+            ) : step === 7 ? (
               <>
                 <span
                   className="material-symbols-outlined text-success text-4xl mb-4 fill"
@@ -142,10 +187,10 @@ export default function CheckoutPage() {
                   check_circle
                 </span>
                 <h2 className="font-headline-lg text-headline-lg text-on-surface mb-2">
-                  {STEP_MESSAGES[6].title}
+                  {STEP_MESSAGES[7].title}
                 </h2>
                 <p className="font-body-base text-body-base text-on-surface-variant">
-                  {STEP_MESSAGES[6].desc}
+                  {STEP_MESSAGES[7].desc}
                 </p>
               </>
             ) : step >= 1 ? (
@@ -167,6 +212,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Order Summary Preview */}
+          {step < 5 && (
           <div className="border-t border-border-subtle pt-6 border-dashed">
             <h3 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-4">
               Resumen del Pedido
@@ -203,6 +249,7 @@ export default function CheckoutPage() {
               )}
             </div>
           </div>
+          )}
         </div>
       </main>
 

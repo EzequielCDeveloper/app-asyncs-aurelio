@@ -1,8 +1,8 @@
 const CATEGORY_MAP = {
-  "electronics": "Burgers",
-  "jewelery": "Sides",
-  "men's clothing": "Drinks",
-  "women's clothing": "Desserts",
+  "electronics": "Hamburguesas",
+  "jewelery": "Acompañamientos",
+  "men's clothing": "Bebidas",
+  "women's clothing": "Postres",
 };
 
 export function mapCategory(fakeCategory) {

@@ -178,6 +178,13 @@ export default function MobileDrawer({ isOpen, onClose, toggleRef }) {
                 </p>
               </div>
               <button
+                onClick={() => handleNavClick("/mis-compras")}
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-on-surface hover:bg-surface-variant/50 transition-colors font-body-base"
+              >
+                <span className="material-symbols-outlined text-on-surface-variant">receipt_long</span>
+                Mis Compras
+              </button>
+              <button
                 onClick={handleLogout}
                 className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-variant/50 transition-colors font-body-base"
               >

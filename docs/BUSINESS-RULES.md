@@ -50,39 +50,44 @@ Todos los cálculos de precios son **client-side** y se ejecutan en el `CartProv
 
 > Los montos pueden diferir ligeramente por redondeo. La app usa `.toFixed(2)` para display.
 
-## Simulación de Checkout
+## Pipeline de Checkout (APIs Reales)
 
-El checkout es una **simulación de 6 pasos** sin conexión a un backend real.
+El checkout ejecuta un **pipeline asincrónico real** con 6 pasos. Ya no es una simulación.
 
-### Pasos de la Simulación
+### Pasos del Pipeline
 
-| Paso | Label | Descripción | Delay |
-|------|-------|-------------|-------|
-| 1 | Conexión | Validando conexión... | 800-1400ms |
-| 2 | Inventario | Confirmando que todo esté en stock... | 800-1400ms |
-| 3 | Total | Aplicando impuestos y descuentos... | 800-1400ms |
-| 4 | Firestore | Registrando tu orden en el sistema... | 800-1400ms |
-| 5 | Historial | Actualizando tu historial de compras... | 800-1400ms |
-| 6 | Completado | ¡Compra completada! | — |
+| Paso | Label | Acción | API |
+|------|-------|--------|-----|
+| 1 | Conexión | `validateConnection()` — fetch a dummyjson.com para verificar conectividad | `GET https://dummyjson.com` |
+| 2 | Inventario | `validateInventory(items)` — verifica que ningún item tenga stock === 0 o quantity > stock | Client-side (datos ya cargados) |
+| 3 | Total | Cálculo de subtotal, descuento, IVA y total desde CartContext | Client-side |
+| 4 | Pedido | `submitOrder(userId, items)` — envía la orden a DummyJSON | `POST https://dummyjson.com/carts/add` |
+| 5 | Guardar | `savePurchase(response)` — persiste la respuesta de la orden en localStorage | Client-side |
+| 6 | Completado | `showTicket` — muestra TicketModal con el resultado | UI |
 
-### Simulación de Falla
+### Validación de Inventario
 
-El paso 4 ("Firestore") tiene un **5% de probabilidad de fallar**. Cuando esto ocurre:
+`validateInventory(items)` recorre los items del carrito y verifica:
 
-1. La simulación se detiene.
-2. Se muestra un mensaje de error: "Error al guardar el pedido. Intenta de nuevo."
-3. Aparece un botón **"Reintentar"** que reinicia la simulación desde el paso 1.
+- Si `item.stock === 0` → error: producto agotado
+- Si `item.quantity > item.stock` → error: cantidad solicitada supera el stock disponible
 
-### Generación de Order ID
+Cualquier error detiene el pipeline y muestra el botón "Reintentar".
 
-Cuando la simulación se completa exitosamente, se genera un ID de orden client-side:
+### Manejo de Errores
 
-```
-DB-{Date.now().toString(36).toUpperCase()}-{Math.floor(Math.random() * 9999)}
-```
+Si cualquiera de los pasos 1-5 falla (error de conexión, error de validación, error de API):
 
-Ejemplo: `DB-2JXK8A0-4732`
+1. El pipeline se detiene.
+2. Se muestra el mensaje de error específico.
+3. Aparece un botón **"Reintentar"** que reinicia el pipeline desde el paso 1.
+
+No hay fallo aleatorio simulado (se eliminó el antiguo 5% de probabilidad en step 4).
+
+### Order ID
+
+Cuando el pipeline se completa exitosamente, el ID de orden proviene de la respuesta real de DummyJSON (`POST /carts/add` → `response.id`). Ya no se genera un ID client-side.
 
 ## ⚠️ Aclaración Importante
 
-> Toda la lógica de precios, impuestos, descuentos y checkout es **simulación únicamente**. No hay cálculos reales de IVA, ni procesamiento de pagos, ni persistencia de órdenes en backend. Esta aplicación es un demo/prototipo con fines de presentación.
+> Toda la lógica de precios, impuestos y descuentos es **client-side**. Aunque el checkout ahora usa APIs reales (validación de conexión, inventario y envío de orden), **no hay procesamiento de pagos real**. Esta aplicación es un demo/prototipo con fines de presentación.

@@ -44,14 +44,30 @@ export async function validateConnection() {
 }
 
 export function validateInventory(items) {
-  const outOfStock = items.filter((i) => i.stock === 0);
-  if (outOfStock.length) {
-    throw new Error(
-      `Producto ${outOfStock[0].name} no tiene stock disponible`
-    );
+  for (const item of items) {
+    if (item.stock === 0) {
+      throw new Error(
+        `Producto ${item.name} no tiene stock disponible`
+      );
+    }
+    if (item.quantity > item.stock) {
+      throw new Error(
+        `Producto ${item.name} supera el stock disponible (pedido: ${item.quantity}, disponible: ${item.stock})`
+      );
+    }
   }
 }
 
 export function savePurchase(order) {
-  localStorage.setItem("dotaburgers-last-order", JSON.stringify(order));
+  const existing = JSON.parse(localStorage.getItem("dotaburgers-purchases") || "[]");
+  existing.push({ ...order, date: new Date().toISOString() });
+  localStorage.setItem("dotaburgers-purchases", JSON.stringify(existing));
+}
+
+export function getPurchases() {
+  try {
+    return JSON.parse(localStorage.getItem("dotaburgers-purchases") || "[]");
+  } catch {
+    return [];
+  }
 }

@@ -1,10 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise } from "./stripe";
 import HomePage from "./pages/HomePage";
 import CartPage from "./pages/CartPage";
 import LoginPage from "./pages/LoginPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import MyPurchasesPage from "./pages/MyPurchasesPage";
 
 export default function App() {
   return (
@@ -16,7 +19,12 @@ export default function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/carrito" element={<CartPage />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/checkout" element={
+                <Elements stripe={stripePromise}>
+                  <CheckoutPage />
+                </Elements>
+              } />
+              <Route path="/mis-compras" element={<MyPurchasesPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>

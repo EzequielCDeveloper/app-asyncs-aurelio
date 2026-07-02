@@ -169,17 +169,17 @@ export default function HomePage() {
                 "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDs7P0zGWvjPgjX4AY97T-BnWYVVaVF9xuiolS5RbsJpWPtpXlH4oSb8yMpP7zpgsbvfkOAuGo0s2_8wu0j2DFks47h8j9YbJ5rPJfQZ-2ccwhPq6A0MGPB6cLWTc6t5huczrZOY0igaVy1Qrz0S029m79EZialXgFFYCCDOVAbjM4ysLU2sWGSEOWfdh2vrniphsSfHUzlJa5hm_ODD8Npx_i-qToaNsTMs89vg2lJ_pN20iUD3jhl2XtwtkciZjL5OIx6B8M0EifF')",
             }}
             role="img"
-            aria-label="Delicious double cheeseburger close-up"
+            aria-label="Hamburguesa doble con queso en primer plano"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6 md:p-8">
             <h1 className="text-headline-xl md:text-headline-2xl font-headline-xl md:font-headline-2xl text-white mb-2 shadow-sm">
-              Taste the Victory.
+              Siente el Sabor de la Victoria.
             </h1>
             <p className="text-body-lg font-body-lg text-white/90 max-w-lg mb-4">
-              Crafted for champions. Our new Double Aegis Burger is here for a limited time.
+              Creada para campeones. Nuestra nueva Double Aegis Burger está aquí por tiempo limitado.
             </p>
             <button className="bg-primary text-on-primary px-6 py-3 rounded-2xl font-label-bold text-label-bold w-max hover:bg-primary-container transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-brand-cream">
-              Order Now
+              Ordenar Ahora
             </button>
           </div>
         </section>

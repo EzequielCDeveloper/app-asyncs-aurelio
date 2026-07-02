@@ -84,14 +84,14 @@ describe('Header', () => {
 
   it('shows search input when showSearch is true', () => {
     renderWithProviders(<Header showSearch />);
-    const searchInput = screen.getByPlaceholderText('Search for burgers, sides...');
+    const searchInput = screen.getByPlaceholderText('Buscar hamburguesas, acompañamientos...');
     expect(searchInput).toBeInTheDocument();
   });
 
   it('hides search input when showSearch is false', () => {
     renderWithProviders(<Header showSearch={false} />);
     expect(
-      screen.queryByPlaceholderText('Search for burgers, sides...')
+      screen.queryByPlaceholderText('Buscar hamburguesas, acompañamientos...')
     ).not.toBeInTheDocument();
   });
 
